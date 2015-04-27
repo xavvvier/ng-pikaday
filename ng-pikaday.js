@@ -5,7 +5,7 @@ angular.module('Pikaday', [])
     restrict: 'A',
     require:'?ngModel',
     link: function (scope, elem, attrs, ngModel) {
-      var Modernizr = Modernizr;
+      var Modernizr = window.Modernizr;
       var hasTouch = Modernizr && Modernizr.touch,
         hasNativeDate = Modernizr && Modernizr.inputtypes.date;
       var dateFromString = function(input){
