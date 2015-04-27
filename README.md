@@ -7,4 +7,4 @@ ng-pikaday
 * Uses native datepicker in mobile devices (requires [modernizr](http://modernizr.com) to detect browser capabilities)
 * Allows you to change the default date format
 
-[**See the basic example→**][ng-pikaday/examples/basic-usage.html]
+[**See the basic example →**](http://xavvvier.github.io/ng-pikaday/examples/basic-usage.html)
