@@ -1,0 +1,19 @@
+.mobile-date {
+    position: relative;
+    overflow: hidden;
+}
+
+    .mobile-date > input[type=text] {
+        z-index: 0;
+    }
+
+    .mobile-date > input[type=date] {
+        position: absolute;
+        z-index: 2;
+        top: 0px;
+        left: 0px;
+        height: 30px;
+        -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+        opacity: 0;
+        -webkit-min-logical-width: 90%;
+    }

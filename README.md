@@ -58,4 +58,29 @@ For custom formatting **Pikaday** uses [moment](http://momentjs.com). Include th
 
 #Mobile
 
-When the input file is visualized in a mobile device, the html5 native date picker is used. (See the formatting example)
+When the input file is visualized in a mobile device, the html5 native date picker is used.
+The *moment* library is required in this case, and a bit of css:
+
+```css
+.mobile-date {
+    position: relative;
+    overflow: hidden;
+}
+
+    .mobile-date > input[type=text] {
+        z-index: 0;
+    }
+
+    .mobile-date > input[type=date] {
+        position: absolute;
+        z-index: 2;
+        top: 0px;
+        left: 0px;
+        height: 30px;
+        -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+        opacity: 0;
+        -webkit-min-logical-width: 90%;
+    }
+```
+
+[**See the mobile example →**](http://xavvvier.github.io/ng-pikaday/examples/mobile.html)

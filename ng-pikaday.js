@@ -18,12 +18,16 @@ angular.module('Pikaday', [])
          } 
          return null;
       };
+      var modelName = attrs.ngModel;
       if (hasTouch && hasNativeDate) {
-          var inputDate = angular.element('<input type="date"/>');
+          var WireFormat = 'YYYY-MM-DD';
+          var inputDate = angular.element('<input type="date" />');
           elem.parent().append(inputDate);
+          elem.parent().addClass('mobile-date');
           inputDate.bind('change', function (event) {
               var value = inputDate.val();
-              elem.val(value||'');
+              var date =moment(value, WireFormat).format(attrs.format);
+              elem.val(date||'');
               if (ngModel) {
                   scope.$apply(function () {
                       ngModel.$setViewValue(date);
@@ -34,14 +38,14 @@ angular.module('Pikaday', [])
           scope.$watch(modelName, function (newValue, oldValue) {
               if (newValue || oldValue) {
                   if (newValue) {
-                      inputDate.val(newValue);
+                      var wireFormattedDate= moment(newValue, attrs.format).format(WireFormat);
+                      inputDate.val(wireFormattedDate);
                   } else {
                       inputDate.val('');
                   }
               }
           });
       } else {
-          var modelName = attrs.ngModel;
           var defaultDate=dateFromString(scope[modelName]);
           var picker = new Pikaday({
             field: elem[0],
