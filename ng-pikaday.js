@@ -1,24 +1,29 @@
 'use strict';
 angular.module('Pikaday', [])
   .directive('pikaday', function () {
-      var WireFormat = "YYYY-MM-DD";
-      var DateFormat ='YYYY-MM-DD';
   return {
     restrict: 'A',
     require:'?ngModel',
     link: function (scope, elem, attrs, ngModel) {
-      var hasTouch = Modernizr.touch,
-        hasNativeDate = Modernizr.inputtypes.date;
+      var Modernizr = Modernizr;
+      var hasTouch = Modernizr && Modernizr.touch,
+        hasNativeDate = Modernizr && Modernizr.inputtypes.date;
+      var dateFromString = function(input){
+         if(attrs.format){
+            if(attrs.format.length==input.length){
+               return moment(input, attrs.format).toDate();
+            }
+         }else if(input.length===15){
+            return new Date(input);
+         } 
+         return null;
+      };
       if (hasTouch && hasNativeDate) {
           var inputDate = angular.element('<input type="date"/>');
           elem.parent().append(inputDate);
           inputDate.bind('change', function (event) {
               var value = inputDate.val();
-              var date = '';
-              if (value) {
-                 date=moment(value, WireFormat).format(DateFormat);
-              }
-              elem.val(date);
+              elem.val(value||'');
               if (ngModel) {
                   scope.$apply(function () {
                       ngModel.$setViewValue(date);
@@ -29,25 +34,26 @@ angular.module('Pikaday', [])
           scope.$watch(modelName, function (newValue, oldValue) {
               if (newValue || oldValue) {
                   if (newValue) {
-                      var date = moment(newValue, DateFormat).format(WireFormat);
-                      inputDate.val(date);
+                      inputDate.val(newValue);
                   } else {
                       inputDate.val('');
                   }
               }
           });
       } else {
+          var modelName = attrs.ngModel;
+          var defaultDate=dateFromString(scope[modelName]);
           var picker = new Pikaday({
             field: elem[0],
             bound: attrs.bound !== 'false',
             position: attrs.position || '',
-            format: attrs.format || DateFormat, // Requires Moment.js for custom formatting
-            defaultDate: new Date(attrs.defaultDate),
-            setDefaultDate: attrs.setDefaultDate === 'true',
+            format: attrs.format,
+            defaultDate: defaultDate,
+            setDefaultDate: defaultDate!=null,
             firstDay: attrs.firstDay ? parseInt(attrs.firstDay) : 0,
-            minDate: new Date(attrs.minDate),
-            maxDate: new Date(attrs.maxDate),
-            yearRange: attrs.yearRange ? JSON.parse(attrs.yearRange) : 10, // Accepts int (10) or 2 elem array ([1992, 1998]) as strings
+            minDate: attrs.minDate && dateFromString(attrs.minDate),
+            maxDate: attrs.maxDate && dateFromString(attrs.maxDate),
+            yearRange: attrs.yearRange ? JSON.parse(attrs.yearRange) : 10,
             yearSuffix: attrs.yearSuffix || '',
             showMonthAfterYear: attrs.showMonthAfterYear === 'true',
 
@@ -57,13 +63,11 @@ angular.module('Pikaday', [])
                 }
             }
           });
-          var modelName = attrs.ngModel;
           scope.$watch(modelName, function (newValue, oldValue) {
-              if (newValue || oldValue) {
+              if ((newValue || oldValue) && newValue !== oldValue) {
                   if (newValue) {
-                      var m=moment(newValue, DateFormat);
-                      if (newValue.length==10 && m.isValid()) {
-                          var date = m.toDate();
+                      var date=dateFromString(newValue);
+                      if (date) {
                           picker.setDate(date, true);
                       }
                   } else {
